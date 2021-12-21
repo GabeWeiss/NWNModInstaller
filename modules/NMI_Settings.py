@@ -38,6 +38,9 @@ class Settings:
                         sys.exit(1)
                     self.vars[settings_nwn_folder] = path
 
+    def nwn_install_dir(self):
+        return self.vars[settings_nwn_folder].strip()
+
     def __del__(self):
         with open(ini_filename, "w") as f:
             for k in self.vars:

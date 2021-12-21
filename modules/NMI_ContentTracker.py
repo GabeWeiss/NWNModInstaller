@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 import sys
 
 manifest = "installed_content.txt"
@@ -20,8 +21,9 @@ mod_folders = {
 }
 
 class ContentTracker:
-    def __init__(self):
+    def __init__(self, nwn_dir):
         self.content_map = {}
+        self.install_dir = nwn_dir
         if os.path.exists(manifest):
             with open(manifest) as f:
                 self.content_map = json.loads(f.read())
@@ -41,12 +43,18 @@ class ContentTracker:
                 print(f"{mod_dir} isn't in one of the known mod folders. Not sure what to do with it.") 
                 continue
 
-            self.content_map[content_name][mod_dir] = []
-
             dest_folder = mod_folders[mod_dir]
+            self.content_map[content_name][dest_folder] = []
+
             for mod_file in os.listdir(os.path.join(mod_path, mod_dir)):
-                self.content_map[content_name][mod_dir].append(mod_file)
-                # TODO: Actually move files
+                source_path = os.path.join(mod_path, mod_dir, mod_file)
+                destination_path = os.path.join(self.install_dir, dest_folder, mod_file)
+                try:
+                    shutil.copy(source_path, destination_path)
+                except Exception as ex:
+                    print(f"Wasn't able to copy over {mod_file}")
+                    sys.exit(1)
+                self.content_map[content_name][dest_folder].append(mod_file)
 
 
     def uninstall_content(self, mod_path):
@@ -56,8 +64,10 @@ class ContentTracker:
             sys.exit(0)
         
         remove_content = self.content_map.pop(content_name)
-        # TODO: implement removal of a piece of content
-        pass
+        for mod_folder in remove_content:
+            for mod_file in remove_content[mod_folder]:
+                del_file = os.path.join(self.install_dir, mod_folder, mod_file)
+                os.remove(del_file)
 
     def list_content(self):
         # TODO: list the mods currently installed

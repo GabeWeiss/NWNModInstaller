@@ -17,9 +17,10 @@ parser.add_argument("-r",
                     action="store_true")
 args = parser.parse_args()
 
-mods = NMI_ContentTracker.ContentTracker()
 ini = NMI_Settings.Settings()
 ini.initialize_settings()
+
+mods = NMI_ContentTracker.ContentTracker(ini.nwn_install_dir())
 
 if args.remove:
     mods.uninstall_content(args.mod)
