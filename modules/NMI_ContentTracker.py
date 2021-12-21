@@ -70,8 +70,9 @@ class ContentTracker:
                 os.remove(del_file)
 
     def list_content(self):
-        # TODO: list the mods currently installed
-        pass
+        print("Installed modules:")
+        for content_name in self.content_map:
+            print(f" {content_name}")
 
     def __del__(self):
         with open(manifest, "w") as f:
