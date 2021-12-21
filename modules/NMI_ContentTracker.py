@@ -31,6 +31,9 @@ class ContentTracker:
         if content_name in self.content_map:
             print(f"You've already installed {content_name}")
             sys.exit(0)
+        if not os.path.exists(mod_path):
+            print("Couldn't find a mod at the specified path, please specify a valid mod.")
+            sys.exit(1)
         mod_dirs = os.listdir(mod_path)
         self.content_map[content_name] = {}
         for mod_dir in mod_dirs:
