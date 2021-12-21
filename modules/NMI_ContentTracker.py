@@ -20,6 +20,12 @@ mod_folders = {
     'docs': 'data/mod_docs'
 }
 
+def find_mod_folder(folder):
+    for m_folder in mod_folders:
+        if m_folder in folder:
+            return mod_folders[m_folder]
+    return None
+
 class ContentTracker:
     def __init__(self, nwn_dir):
         self.content_map = {}
@@ -39,11 +45,16 @@ class ContentTracker:
         mod_dirs = os.listdir(mod_path)
         self.content_map[content_name] = {}
         for mod_dir in mod_dirs:
-            if not mod_dir in mod_folders:
+            # Known stupid things that operating systems do sometimes that we
+            # need to ignore
+            if mod_dir == '.DS_Store':
+                continue
+
+            dest_folder = find_mod_folder(mod_dir)
+            if not dest_folder:
                 print(f"{mod_dir} isn't in one of the known mod folders. Not sure what to do with it.") 
                 continue
 
-            dest_folder = mod_folders[mod_dir]
             self.content_map[content_name][dest_folder] = []
 
             for mod_file in os.listdir(os.path.join(mod_path, mod_dir)):
